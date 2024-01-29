@@ -1,11 +1,10 @@
-
 ---
-title: 使用Metaplex在Solana创建NFTs
+title: 使用 Metaplex 在 Solana 创建NFTs
 objectives:
-- 解释NFTs以及它们在Solana网络中的表示方式
-- 解释Metaplex在Solana NFT生态系统中的作用
+- 解释 NFTs 以及它们在 Solana 网络中的表示方式
+- 解释 Metaplex 在Solana NFT生态系统中的作用
 - 使用Metaplex SDK创建和更新NFTs
-- 解释Token Metadata程序、Candy Machine程序和Sugar CLI的基本功能，它们是帮助在Solana上创建和分发NFTs的工具
+- 解释Token Metadata程序、Candy Machine程序和Sugar CLI的基本功能，它们是帮助在 Solana 上创建和分发 NFTs 的工具
 ---
 
 # TL;DR
@@ -215,15 +214,15 @@ Candy Machine实际上是一个铸造和分发程序，帮助启动 NFT 收藏�
 
 # 实验室
 
-在这个实验室中，我们将逐步介绍使用Metaplex SDK创建NFT的步骤，然后在事后更新NFT的元数据，最后将NFT与一个集合关联起来。到最后，你将对如何在Solana上使用Metaplex SDK与NFT进行交互有一个基本的了解。
+在这个实验室中，我们将逐步介绍使用Metaplex SDK创建 NFT 的步骤，然后在事后更新 NFT 的元数据，最后将 NFT 与一个集合关联起来。到最后，你将对如何在 Solana 上使用Metaplex SDK与 NFT 进行交互有一个基本的了解。
 
 ### 1. 起步
 
 首先，从[此代码库](https://github.com/Unboxed-Software/solana-metaplex/tree/starter)的`starter`分支下载起始代码。
 
-项目中的`src`目录包含我们将用于NFT的两个图像。
+项目中的`src`目录包含我们将用于 NFT 的两个图像。
 
-此外，在`index.ts`文件中，你会找到以下代码片段，其中包含我们将要创建和更新的NFT的示例数据。
+此外，在`index.ts`文件中，你会找到以下代码片段，其中包含我们将要创建和更新的 NFT 的示例数据。
 
 ```tsx
 interface NftData {
@@ -244,7 +243,7 @@ interface CollectionNftData {
   collectionAuthority: Signer
 }
 
-// 新NFT的示例数据
+// 新 NFT 的示例数据
 const nftData = {
   name: "名称",
   symbol: "SYMBOL",
@@ -253,7 +252,7 @@ const nftData = {
   imageFile: "solana.png",
 }
 
-// 更新现有NFT的示例数据
+// 更新现有 NFT 的示例数据
 const updateNftData = {
   name: "更新",
   symbol: "UPDATE",
@@ -263,7 +262,7 @@ const updateNftData = {
 }
 
 async function main() {
-  // 创建到集群API的新连接
+  // 创建到集群 API 的新连接
   const connection = new Connection(clusterApiUrl("devnet"));
 
   // 为用户初始化一个密钥对
@@ -287,11 +286,11 @@ Finished successfully
 
 ### 2. 设置Metaplex
 
-在我们开始创建和更新NFT之前，我们需要设置Metaplex实例。更新`main()`函数如下：
+在我们开始创建和更新 NFT 之前，我们需要设置 Metaplex 实例。更新`main()`函数如下：
 
 ```tsx
 async function main() {
-  // 创建到集群API的新连接
+  // 创建到集群 API 的新连接
   const connection = new Connection(clusterApiUrl("devnet"));
 
   // 为用户初始化一个密钥对
@@ -314,7 +313,7 @@ async function main() {
 
 ### 3. `uploadMetadata` 辅助函数
 
-接下来，让我们创建一个辅助函数来处理上传图像和元数据的过程，并返回元数据URI。此函数将以Metaplex实例和NFT数据作为输入，并返回元数据URI作为输出。
+接下来，让我们创建一个辅助函数来处理上传图像和元数据的过程，并返回元数据URI。此函数将以 Metaplex 实例和 NFT 数据作为输入，并返回元数据 URI 作为输出。
 
 ```tsx
 // 辅助函数，上传图像和元数据
@@ -325,7 +324,7 @@ async function uploadMetadata(
   // 文件转换为 buffer
   const buffer = fs.readFileSync("src/" + nftData.imageFile);
 
-  // buffer 转换为Metaplex文件
+  // buffer 转换为 Metaplex 文件
   const file = toMetaplexFile(buffer, nftData.imageFile);
 
   // 上传图像并获取图像URI
@@ -345,11 +344,11 @@ async function uploadMetadata(
 }
 ```
 
-该函数将读取一个图像文件，将其转换为buffer，然后上传它以获取图像URI。然后，它将上传NFT元数据，其中包括名称、符号、描述和图像URI，并获取一个元数据URI。这个URI是链下元数据。该函数还会记录图像URI和元数据URI以供参考。
+该函数将读取一个图像文件，将其转换为buffer，然后上传它以获取图像URI。然后，它将上传 NFT 元数据，其中包括名称、符号、描述和图像URI，并获取一个元数据URI。这个 URI 是链下元数据。该函数还会记录图像 URI 和元数据 URI 以供参考。
 
 ### 5. `createNft` 辅助函数
 
-接下来，让我们创建一个辅助函数来处理创建NFT的过程。此函数接受Metaplex实例、元数据URI和NFT数据作为输入。它使用SDK的`create`方法创建NFT，将元数据URI、名称、版权费(sellerFeeBasisPoints)和符号作为参数传递。
+接下来，让我们创建一个辅助函数来处理创建 NFT 的过程。此函数接受 Metaplex 实例、元数据 URI 和 NFT 数据作为输入。它使用 SDK 的`create`方法创建NFT，将元数据URI、名称、版权费(sellerFeeBasisPoints)和符号作为参数传递。
 
 ```tsx
 // 辅助函数，创建NFT
@@ -376,20 +375,20 @@ async function createNft(
 }
 ```
 
-`createNft`函数记录了Token Mint的URL，并返回包含有关新创建NFT信息的`nft`对象。NFT的地址与设置Metaplex实例时使用的用户Identity Driver程序相对应。
+`createNft`函数记录了Token Mint的URL，并返回包含有关新创建 NFT 信息的`nft`对象。NFT的地址与设置 Metaplex 实例时使用的用户Identity Driver程序相对应。
 
 ### 6. 创建NFT
 
-现在我们已经设置了Metaplex实例，并创建了用于上传元数据和创建NFT的辅助函数，我们可以通过创建一个NFT来测试这些函数。在`main()`函数中，调用`uploadMetadata`函数上传NFT数据并获取元数据的URI。然后，使用`createNft`函数和元数据URI来创建一个NFT。
+现在我们已经设置了 Metaplex 实例，并创建了用于上传元数据和创建 NFT 的辅助函数，我们可以通过创建一个 NFT 来测试这些函数。在`main()`函数中，调用`uploadMetadata`函数上传 NFT 数据并获取元数据的URI。然后，使用`createNft`函数和元数据 URI 来创建一个NFT。
 
 ```tsx
 async function main() {
 	...
 
-  // 上传NFT数据并获取元数据的URI
+  // 上传 NFT 数据并获取元数据的URI
   const uri = await uploadMetadata(metaplex, nftData)
 
-  // 使用辅助函数和元数据中的URI创建一个NFT
+  // 使用辅助函数和元数据中的 URI 创建一个NFT
   const nft = await createNft(metaplex, uri, nftData)
 }
 ```
@@ -405,11 +404,11 @@ Token Mint: https://explorer.solana.com/address/QdK4oCUZ1zMroCd4vqndnTH7aPAsr8Ap
 Finished successfully
 ```
 
-你可以检查生成的图像和元数据的URI，并通过访问输出中提供的URL在Solana浏览器中查看NFT。
+你可以检查生成的图像和元数据的URI，并通过访问输出中提供的 URL 在 Solana 浏览器中查看NFT。
 
 ### 7. `updateNftUri` 辅助函数
 
-接下来，让我们创建一个辅助函数来处理更新现有NFT的URI。这个函数将接受Metaplex实例、元数据URI和NFT的铸造地址作为输入。它使用SDK的`findByMint`方法使用铸造地址获取现有NFT数据，然后使用`update`方法使用新URI更新元数据。最后，它将记录令牌铸造的URL和交易签名以供参考。
+接下来，让我们创建一个辅助函数来处理更新现有 NFT 的URI。这个函数将接受 Metaplex 实例、元数据 URI 和 NFT 的铸造地址作为输入。它使用 SDK 的`findByMint`方法使用铸造地址获取现有 NFT 数据，然后使用`update`方法使用新 URI 更新元数据。最后，它将记录令牌铸造的 URL 和交易签名以供参考。
 
 ```tsx
 // 辅助函数，更新NFT
@@ -418,10 +417,10 @@ async function updateNftUri(
   uri: string,
   mintAddress: PublicKey,
 ) {
-  // 使用铸造厂地址获取NFT数据
+  // 使用铸造厂地址获取 NFT 数据
   const nft = await metaplex.nfts().findByMint({ mintAddress });
 
-  // 更新NFT元数据
+  // 更新 NFT 元数据
   const { response } = await metaplex.nfts().update(
     {
       nftOrSft: nft,
@@ -442,16 +441,16 @@ async function updateNftUri(
 
 ### 8. 更新NFT
 
-要更新现有的NFT，我们首先需要上传新的NFT元数据并获取对应的URI。在`main()`函数中，再次调用`uploadMetadata`函数上传更新的NFT数据并获取元数据的新URI。然后，我们可以使用`updateNftUri`辅助函数，传入Metaplex实例、来自元数据的新URI以及NFT的铸造厂地址。`nft.address`是`createNft`函数的输出。
+要更新现有的NFT，我们首先需要上传新的 NFT 元数据并获取对应的URI。在`main()`函数中，再次调用`uploadMetadata`函数上传更新的 NFT 数据并获取元数据的新URI。然后，我们可以使用`updateNftUri`辅助函数，传入 Metaplex 实例、来自元数据的新 URI 以及 NFT 的铸造厂地址。`nft.address`是`createNft`函数的输出。
 
 ```tsx
 async function main() {
 	...
 
-  // 上传更新后的NFT数据并获取元数据的新URI
+  // 上传更新后的 NFT 数据并获取元数据的新URI
   const updatedUri = await uploadMetadata(metaplex, updateNftData)
 
-  // 使用辅助函数和来自元数据的新URI更新NFT
+  // 使用辅助函数和来自元数据的新 URI 更新NFT
   await updateNftUri(metaplex, updatedUri, nft.address)
 }
 ```
@@ -465,11 +464,11 @@ Transaction: https://explorer.solana.com/tx/5VkG47iGmECrqD11zbF7psaVqFkA4tz3iZar
 成功完成
 ```
 
-你也可以通过从`.env`文件中导入`PRIVATE_KEY`到Phantom钱包中查看NFT。
+你也可以通过从`.env`文件中导入`PRIVATE_KEY`到 Phantom 钱包中查看NFT。
 
-### 9. 创建NFT集合
+### 9. 创建 NFT 集合
 
-太棒了，你现在知道如何在Solana区块链上创建单个NFT并对其进行更新了！但是，如何将它添加到一个集合中呢？
+太棒了，你现在知道如何在 Solana 区块链上创建单个 NFT 并对其进行更新了！但是，如何将它添加到一个集合中呢？
 
 首先，让我们创建一个名为`createCollectionNft`的辅助函数。请注意，它与`createNft`非常相似，但确保`isCollection`设置为true，并且数据符合集合的要求。
 
@@ -498,7 +497,7 @@ async function createCollectionNft(
 }
 ```
 
-接下来，我们需要创建集合的链下数据。在`main` *之前* 对创建NFT的现有代码进行修改，添加以下`collectionNftData`：
+接下来，我们需要创建集合的链下数据。在`main` *之前* 对创建 NFT 的现有代码进行修改，添加以下`collectionNftData`：
 
 ```tsx
 const collectionNftData = {
@@ -514,16 +513,16 @@ Collection: true,
 }
 ```
 
-现在，让我们调用`uploadMetadata`与`collectionNftData`，然后调用`createCollectionNft`。再次强调，这应该在创建NFT的代码之前进行。
+现在，让我们调用`uploadMetadata`与`collectionNftData`，然后调用`createCollectionNft`。再次强调，这应该在创建 NFT 的代码之前进行。
 
 ```tsx
 async function main() {
   ...
 
-  // 上传集合NFT的数据并获取元数据的URI
+  // 上传集合 NFT 的数据并获取元数据的URI
   const collectionUri = await uploadMetadata(metaplex, collectionNftData)
 
-  // 使用辅助函数和元数据的URI创建集合NFT
+  // 使用辅助函数和元数据的 URI 创建集合NFT
   const collectionNft = await createCollectionNft(
     metaplex,
     collectionUri,
@@ -532,11 +531,11 @@ async function main() {
 }
 ```
 
-这将返回我们集合的铸造地址，因此我们可以使用它来将NFT添加到集合中。
+这将返回我们集合的铸造地址，因此我们可以使用它来将 NFT 添加到集合中。
 
-### 10. 将NFT添加到集合
+### 10. 将 NFT 添加到集合
 
-现在我们有了一个集合，让我们修改现有代码，使新创建的NFT可以添加到集合中。首先，让我们修改`createNft`函数，以便在调用`nfts().create`时包含`collection`字段。然后，添加调用`verifyCollection`的代码，以便将链上元数据的`verified`字段设置为true。这样，消费程序和应用程序可以确保NFT确实属于集合。
+现在我们有了一个集合，让我们修改现有代码，使新创建的 NFT 可以添加到集合中。首先，让我们修改`createNft`函数，以便在调用`nfts().create`时包含`collection`字段。然后，添加调用`verifyCollection`的代码，以便将链上元数据的`verified`字段设置为true。这样，消费程序和应用程序可以确保 NFT 确实属于集合。
 
 ```tsx
 async function createNft(
@@ -569,19 +568,19 @@ async function createNft(
 }
 ```
 
-现在，运行`npm start`，完成！如果你按照新的NFT链接并查看元数据选项卡，你将看到一个包含你集合铸造地址的`collection`字段。
+现在，运行`npm start`，完成！如果你按照新的 NFT 链接并查看元数据选项卡，你将看到一个包含你集合铸造地址的`collection`字段。
 
-恭喜！你已成功学会使用Metaplex SDK创建、更新和验证NFT，并将其作为集合的一部分。这就是你需要为几乎任何用例构建自己的集合所需的一切。你可以建立一个TicketMaster的竞争对手，改进Costco的会员计划，甚至将你学校的学生ID系统数字化。可能性是无限的！
+恭喜！你已成功学会使用Metaplex SDK创建、更新和验证NFT，并将其作为集合的一部分。这就是你需要为几乎任何用例构建自己的集合所需的一切。你可以建立一个 TicketMaster 的竞争对手，改进 Costco 的会员计划，甚至将你学校的学生 ID 系统数字化。可能性是无限的！
 
 如果你想查看最终解决方案代码，你可以在同一个[代码库](https://github.com/Unboxed-Software/solana-metaplex/tree/solution)的解决方案分支中找到它。
 
 # 挑战
 
-为了加深对Metaplex工具的理解，深入研究Metaplex文档，熟悉Metaplex提供的各种程序和工具。你可以深入了解糖果机程序以了解其功能。
+为了加深对 Metaplex 工具的理解，深入研究 Metaplex 文档，熟悉 Metaplex 提供的各种程序和工具。你可以深入了解糖果机程序以了解其功能。
 
 一旦你了解了糖果机程序的工作原理，就可以通过使用Sugar CLI为自己的集合创建一个糖果机来将你的知识付诸实践。这种亲身体验不仅会加强你对工具的理解，还会增强你未来有效使用它们的信心。
 
-玩得开心！这将是你第一次独立创建的NFT集合！有了这个，你就完成了第二模块。希望你能感受到这个过程！随时[分享一些快速反馈](https://airtable.com/shrOsyopqYlzvmXSC?prefill_Module=Module%202)，以便我们继续改进课程！
+玩得开心！这将是你第一次独立创建的 NFT 集合！有了这个，你就完成了第二模块。希望你能感受到这个过程！随时[分享一些快速反馈](https://airtable.com/shrOsyopqYlzvmXSC?prefill_Module=Module%202)，以便我们继续改进课程！
 
 ## 完成了实验吗？
 
