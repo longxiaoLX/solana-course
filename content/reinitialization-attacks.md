@@ -6,7 +6,7 @@ objectives:
 - Using Anchor’s `init` constraint to initialize accounts, which automatically sets an account discriminator that is checked to prevent the reinitialization of an account
 ---
 
-# TL;DR
+# Summary
 
 - Use an account discriminator or initialization flag to check whether an account has already been initialized to prevent an account from being reinitialized and overriding existing account data.
 - To prevent account reinitialization in plain Rust, initialize accounts with an `is_initialized` flag and check if it has already been set to true when initializing an account
@@ -214,8 +214,8 @@ The test file includes the setup to create an account by invoking the system pro
 Since there are no checks the verify that the account data has not already been initialized, the `insecure_initialization` instruction will complete successfully both times, despite the second invocation providing a *different* authority account.
 
 ```tsx
-import * as anchor from "@project-serum/anchor"
-import { Program } from "@project-serum/anchor"
+import * as anchor from "@coral-xyz/anchor"
+import { Program } from "@coral-xyz/anchor"
 import { expect } from "chai"
 import { Initialization } from "../target/types/initialization"
 

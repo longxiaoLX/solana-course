@@ -8,7 +8,7 @@ objectives:
 - Use Borsh to serialize program data
 ---
 
-# TL;DR
+# Summary
 
 - Transactions are made up of an array of instructions, a single transaction can have any number of instructions in it, each targeting its own program. When a transaction is submitted, the Solana runtime will process its instructions in order and atomically, meaning that if any of the instructions fail for any reason, the entire transaction will fail to be processed.
 - Every *instruction* is made up of 3 components: the intended program's ID, an array of all account’s involved, and a byte buffer of instruction data.
@@ -187,7 +187,7 @@ Before we get started, go ahead and download the [starter code](https://github.c
 
 The project is a fairly simple Next.js application. It includes the `WalletContextProvider` we created in the Wallets lesson, a `Card` component for displaying a movie review, a `MovieList` component that displays reviews in a list, a `Form` component for submitting a new review, and a `Movie.ts` file that contains a class definition for a `Movie` object.
 
-Note that for now, the movies displayed on the page when you run `npm run dev` are mocks. In this lesson, we’ll focus on adding a new review but we won’t actually be able to see that review displayed. Next lesson, we’ll focus on deserializing custom data from on-chain accounts.
+Note that for now, the movies displayed on the page when you run `npm run dev` are mocks. In this lesson, we’ll focus on adding a new review but we won’t actually be able to see that review displayed. Next lesson, we’ll focus on deserializing custom data from onchain accounts.
 
 ### 2. Create the buffer layout
 

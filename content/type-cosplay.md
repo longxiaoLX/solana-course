@@ -7,7 +7,7 @@ objectives:
 - Use Anchor's `Account` type for account validation
 ---
 
-# TL;DR
+# Summary
 
 - Use discriminators to distinguish between different account types
 - To implement a discriminator in Rust, include a field in the account struct to represent the account type
@@ -258,8 +258,8 @@ Now in your `programs` folder you will have two programs. Run `anchor keys list`
 Next, update the test file's setup to include the new program and two new keypairs for the accounts we'll be initializing for the new program.
 
 ```tsx
-import * as anchor from "@project-serum/anchor"
-import { Program } from "@project-serum/anchor"
+import * as anchor from "@coral-xyz/anchor"
+import { Program } from "@coral-xyz/anchor"
 import { TypeCosplay } from "../target/types/type_cosplay"
 import { TypeChecked } from "../target/types/type_checked"
 import { expect } from "chai"

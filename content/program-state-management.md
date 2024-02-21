@@ -8,7 +8,7 @@ objectives:
 - Explain how to update the data stored on a new account
 ---
 
-# TL;DR
+# Summary
 
 - Program state is stored in other accounts rather than in the program itself
 - A Program Derived Address (PDA) is derived from a program ID and an optional list of seeds. Once derived, PDAs are subsequently used as the address for a storage account.
@@ -77,7 +77,7 @@ To create a new account within our program we must:
 
 Recall that storing data on the Solana network requires users to allocate rent in the form of lamports. The amount of rent required by a new account depends on the amount of space you would like allocated to that account. That means we need to know before creating the account how much space to allocate.
 
-Note that rent is more like a deposit. All the lamports allocated for rent can be fully refunded when an account is closed. Additionally, all new accounts are now required to be [rent-exempt](https://twitter.com/jacobvcreech/status/1524790032938287105), meaning lamports are not deducted from the account over time. An account is considered rent-exempt if it holds at least 2 years worth of rent. In other words, accounts are stored on-chain permanently until the owner closes the account and withdraws the rent.
+Note that rent is more like a deposit. All the lamports allocated for rent can be fully refunded when an account is closed. Additionally, all new accounts are now required to be [rent-exempt](https://twitter.com/jacobvcreech/status/1524790032938287105), meaning lamports are not deducted from the account over time. An account is considered rent-exempt if it holds at least 2 years worth of rent. In other words, accounts are stored onchain permanently until the owner closes the account and withdraws the rent.
 
 In our note-taking app example, the `NoteState` struct specifies three fields that need to be stored in an account: `title`, `body`, and `id`. To calculate the size the account needs to be, you would simply add up the size required to store the data in each field.
 

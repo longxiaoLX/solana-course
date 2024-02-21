@@ -45,7 +45,7 @@ Compared to older platforms like Bitcoin and Ethereum, Solana is:
 
 - Massively cheaper - transaction fees (referred to as 'gas fees' in older networks) are typically $0.00025 (much less than one penny) regardless of the value of what's being transferred.
 
-- Highly decentralized, having one of the highest Nakamoto coefficient (decentralization score) of any proof-of-stake network.
+- Highly decentralized, having one of the highest Nakamoto coefficients (decentralization score) of any proof-of-stake network.
 
 Many of the common use cases on Solana are only possible on Solana, due to the high costs and slow translation times of older blockchains.
 
@@ -75,15 +75,15 @@ You **don't** need previous blockchain experience to follow this course!
 ## How is this course structured?
 
 There are three tracks:
- - **dApp development** - building web and mobile apps that interact with popular on-chain Solana programs. These cover things like token transfers, minting, and creating clients for arbitrary programs. if you want to add blockchain payments, NFTs, blockchain provenance, etc. to your apps this is the best track to start with,   
- - **On-chain program development** - creating custom apps that run on the blockchain. If you want to make a new finance or accounting app, use data from outside Solana on-chain, or use the blockchain to store arbitrary data, this track is for you. 
+ - **dApp development** - building web and mobile apps that interact with popular onchain Solana programs. These cover things like token transfers, minting, and creating clients for arbitrary programs. if you want to add blockchain payments, NFTs, blockchain provenance, etc. to your apps this is the best track to start with,   
+ - **Onchain program development** - creating custom apps that run on the blockchain. If you want to make a new finance or accounting app, use data from outside Solana on-chain, or use the blockchain to store arbitrary data, this track is for you. 
  - **Network infrastructure** - covers running Solana itself, as an RPC or validator.
 
 Modules cover a particular topic. These are broken down into individual lessons.
 
 Each lesson starts by listing the lesson objectives - ie, what you'll be learning in the lesson.
 
-Then there's a brief 'TL;DR' so that you can glance through, get a sense of what the lesson covers, and decide if the lesson is for you or not.
+Then there's a brief 'Summary' so that you can glance through, get a sense of what the lesson covers, and decide if the lesson is for you or not.
 
 Then each lesson has three sections:
 

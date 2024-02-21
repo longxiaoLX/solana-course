@@ -7,7 +7,7 @@ objectives:
 - Use the `close` constraint to close an existing account
 ---
 
-# TL;DR
+# Summary
 
 - The `seeds` and `bump` constraints are used to initialize and validate PDA accounts in Anchor
 - The `init_if_needed` constraint is used to conditionally initialize a new account
@@ -541,8 +541,8 @@ Here we:
 - Create placeholders for tests
 
 ```typescript
-import * as anchor from "@project-serum/anchor"
-import { Program } from "@project-serum/anchor"
+import * as anchor from "@coral-xyz/anchor"
+import { Program } from "@coral-xyz/anchor"
 import { assert, expect } from "chai"
 import { AnchorMovieReviewProgram } from "../target/types/anchor_movie_review_program"
 
