@@ -71,21 +71,20 @@ objectives:
 
 这些数据的结构将取决于程序的编写方式，但通常情况下，指令数据的第一个字段是程序可以映射到函数的数字，随后的附加字段充当函数参数。
 
-## Serialization
+## 序列化
 
-In addition to knowing what information to include in an instruction data buffer, you also need to serialize it properly. The most common serializer used in Solana is [Borsh](https://borsh.io). Per the website:
+除了知道要在指令数据缓冲区中包含哪些信息之外，您还需要正确地序列化它。在Solana中最常用的序列化工具是[Borsh](https://borsh.io)。根据官网的描述：
 
-> Borsh stands for Binary Object Representation Serializer for Hashing. It is meant to be used in security-critical projects as it prioritizes consistency, safety, speed; and comes with a strict specification.
+> Borsh代表二进制对象表示法序列化器用于哈希。它旨在用于安全关键的项目，因为它优先考虑一致性、安全性、速度；并且附带严格的规范。
 
-Borsh maintains a [JS library](https://github.com/near/borsh-js) that handles serializing common types into a buffer. There are also other packages built on top of borsh that try to make this process even easier. We’ll be using the `@coral-xyz/borsh` library which can be installed using `npm`.
+Borsh维护了一个[JS库](https://github.com/near/borsh-js)，该库处理将常见类型序列化到缓冲区(buffer)中。 还有一些基于borsh构建的其他包试图使这个过程变得更加简单。我们将使用 `@coral-xyz/borsh`库，可以使用`npm`进行安装。
+基于之前的游戏库存示例，让我们来看一个假设性的场景，其中我们指示程序为玩家装备一个给定的物品。假设程序设计为接受一个代表具有以下属性的结构体的缓冲区(buffer)：
 
-Building off of the previous game inventory example, let’s look at a hypothetical scenario where we are instructing the program to equip a player with a given item. Assume the program is designed to accept a buffer that represents a struct with the following properties:
+1.variant 作为一个无符号的8位整数，指示程序要执行哪个指令或函数。
+2.playerId 作为一个无符号的16位整数，代表要装备给定物品的玩家的玩家ID。
+3.itemId 作为一个无符号的256位整数，代表将要装备给给定玩家的物品ID。
 
-1. `variant` as an unsigned, 8-bit integer that instructs the program which instruction, or function, to execute.
-2. `playerId` as an unsigned, 16-bit integer that represents the player ID of the player who is to be equipped with the given item.
-3. `itemId` as an unsigned, 256-bit integer that represents the item ID of the item that will be equipped to the given player.
-
-All of this will be passed as a byte buffer that will be read in order, so ensuring proper buffer layout order is crucial. You would create the buffer layout schema or template for the above as follows:
+所有这些都将作为一个字节缓冲区传递，将按顺序读取，所以确保正确的缓冲区布局顺序是至关重要的。你将为上述内容创建缓冲区布局模式或模板，如下所示：
 
 ```tsx
 import * as borsh from '@coral-xyz/borsh'
@@ -97,7 +96,7 @@ const equipPlayerSchema = borsh.struct([
 ])
 ```
 
-You can then encode data using this schema with the `encode` method. This method accepts as arguments an object representing the data to be serialized and a buffer. In the below example, we allocate a new buffer that’s much larger than needed, then encode the data into that buffer and slice the original buffer down into a new buffer that’s only as large as needed.
+接下来，您可以使用这个模式（schema）和encode方法来编码数据。这个方法接受一个代表要序列化数据的对象和一个缓冲区作为参数。在下面的示例中，我们分配了一个比需要的大得多的新缓冲区，然后将数据编码到那个缓冲区中，并将原始缓冲区切割成一个新的、仅与所需大小相等的缓冲区。
 
 ```tsx
 import * as borsh from '@coral-xyz/borsh'
@@ -114,12 +113,12 @@ equipPlayerSchema.encode({ variant: 2, playerId: 1435, itemId: 737498 }, buffer)
 const instructionBuffer = buffer.slice(0, equipPlayerSchema.getSpan(buffer))
 ```
 
-Once a buffer is properly created and the data serialized, all that’s left is building the transaction. This is similar to what you’ve done in previous lessons. The example below assumes that:
+一旦缓冲区被正确创建并且数据被序列化，剩下的就是构建交易了。这与你在之前的课程中所做的类似。下面的示例假设：
 
-- `player`, `playerInfoAccount`, and `PROGRAM_ID` are already defined somewhere outside the code snippet
-- `player` is a user’s public key
-- `playerInfoAccount` is the public key of the account where inventory changes will be written
-- `SystemProgram` will be used in the process of executing the instruction.
+- `player`、`playerInfoAccount`和`PROGRAM_ID`已经在代码片段之外的某个地方定义
+- `player`是用户的公钥
+- `playerInfoAccount`是将要写入库存变更的账户的公钥
+- 在执行指令的过程中将会使用`SystemProgram`。
 
 ```tsx
 import * as borsh from '@coral-xyz/borsh'
@@ -169,36 +168,36 @@ web3.sendAndConfirmTransaction(connection, transaction, [player]).then((txid) =>
 })
 ```
 
-# Lab
+# 实验
 
-Let’s practice this together by building a Movie Review app that lets users submit a movie review and have it stored on Solana’s network. We’ll build this app a little bit at a time over the next few lessons, adding new functionality each lesson.
+构建一个电影评论应用是一个很好的实践项目，它允许用户提交电影评论，并将其存储在Solana网络上。我们将在接下来的几节课中逐步构建这个应用，每节课都会添加新的功能。让我们一步一步来实现这个目标。
 
-![Movie review frontend](../assets/movie-reviews-frontend.png)
+![电影评论前端界面](../../assets/movie-reviews-frontend.png)
 
-Here's a quick diagram of the program we'll build:
+这是我们将要构建的程序的快速图解:
 
-![Solana stores data items in PDAs, which can be found by their seeds](../assets/movie-review-program.svg)
+![Solana在PDA中存储数据项，这些数据项可以通过它们的种子找到。](../../assets/movie-review-program.svg)
 
-The public key of the Solana program we’ll use for this application is `CenYq6bDRB7p73EjsPEpiYN7uveyPUTdXkDkgUduboaN`.
+我们将在这个应用程序中使用的Solana程序的公钥是`CenYq6bDRB7p73EjsPEpiYN7uveyPUTdXkDkgUduboaN`.
 
-### 1. Download the starter code
+### 1. 下载初始代码
 
-Before we get started, go ahead and download the [starter code](https://github.com/Unboxed-Software/solana-movie-frontend/tree/starter).
+在我们开始之前，请先下载[初始代码](https://github.com/Unboxed-Software/solana-movie-frontend/tree/starter).
 
-The project is a fairly simple Next.js application. It includes the `WalletContextProvider` we created in the Wallets lesson, a `Card` component for displaying a movie review, a `MovieList` component that displays reviews in a list, a `Form` component for submitting a new review, and a `Movie.ts` file that contains a class definition for a `Movie` object.
+该项目是一个相对简单的`Next.js`应用程序。它包括我们在钱包课程中创建的`WalletContextProvider`，一个用于展示电影评论的`Card`组件，一个用于以列表形式展示评论的`MovieList`组件，一个用于提交新评论的`Form`组件，以及一个包含`Movie`对象类定义的`Movie.ts`文件。
 
-Note that for now, the movies displayed on the page when you run `npm run dev` are mocks. In this lesson, we’ll focus on adding a new review but we won’t actually be able to see that review displayed. Next lesson, we’ll focus on deserializing custom data from onchain accounts.
+请注意，目前，在你运行`npm run dev`时页面上显示的电影是模拟数据。在本课中，我们将专注于添加新的评论，但实际上我们将无法看到该评论被展示。在下一课中，我们将专注于从链上账户反序列化自定义数据。
 
-### 2. Create the buffer layout
+### 2. 创建缓冲区布局
 
-Remember that to properly interact with a Solana program, you need to know how it expects data to be structured. Our Movie Review program is expecting instruction data to contain:
+记住，要正确地与Solana程序交互，你需要知道它期望数据如何结构化。我们的电影评论程序期望指令数据包含：
 
-1. `variant` as an unsigned, 8-bit integer representing which instruction should be executed (in other words which function on the program should be called).
-2. `title` as a string representing the title of the movie that you are reviewing.
-3. `rating` as an unsigned, 8-bit integer representing the rating out of 5 that you are giving to the movie you are reviewing.
-4. `description` as a string representing the written portion of the review you are leaving for the movie.
+1. `variant`作为一个无符号的8位整数，表示应该执行哪个指令（换句话说，应该调用程序上的哪个函数）。
+2. `title`作为一个字符串，代表你正在评论的电影的标题。
+3. `rating`作为一个无符号的8位整数，代表你给予正在评论的电影的评分，满分为5分。
+4. `description`作为一个字符串，代表你为电影留下的书面评论部分。
 
-Let’s configure a `borsh` layout in the `Movie` class. Start by importing `@coral-xyz/borsh`. Next, create a `borshInstructionSchema` property and set it to the appropriate `borsh` struct containing the properties listed above.
+让我们在`Movie`类中配置一个`borsh`布局。首先导入`@coral-xyz/borsh`。接下来，创建一个`borshInstructionSchema`属性，并将其设置为包含上述属性的适当`borsh`结构体。
 
 ```tsx
 import * as borsh from '@coral-xyz/borsh'
@@ -219,11 +218,11 @@ export class Movie {
 }
 ```
 
-Keep in mind that *order matters*. If the order of properties here differs from how the program is structured, the transaction will fail.
+请记住，顺序很重要。如果这里属性的*顺序*与程序的结构不同，交易将会失败。
 
-### 3. Create a method to serialize data
+### 3. 创建一个用于序列化数据的方法
 
-Now that we have the buffer layout set up, let’s create a method in `Movie` called `serialize()` that will return a `Buffer` with a `Movie` object’s properties encoded into the appropriate layout.
+现在我们已经设置好了缓冲区布局，让我们在`Movie`中创建一个名为`serialize()`的方法，该方法将返回一个`Buffer`，其中包含`Movie`对象的属性，这些属性被编码到适当的布局中。
 
 ```tsx
 import * as borsh from '@coral-xyz/borsh'
@@ -250,15 +249,15 @@ export class Movie {
 }
 ```
 
-The method shown above first creates a large enough buffer for our object, then encodes `{ ...this, variant: 0 }` into the buffer. Because the `Movie` class definition contains 3 of the 4 properties required by the buffer layout and uses the same naming, we can use it directly with the spread operator and just add the `variant` property. Finally, the method returns a new buffer that leaves off the unused portion of the original.
+上述方法首先为我们的对象创建了一个足够大的缓冲区，然后将`{ ...this, variant: 0 }`编码进缓冲区。因为`Movie`类定义包含了缓冲区布局所需的4个属性中的3个，并且使用了相同的命名，我们可以直接使用展开运算符并只添加variant属性。最后，该方法返回一个新的缓冲区，省略了原始缓冲区中未使用的部分。
 
-### 4. Send transaction when user submits form
+### 4. 用户提交表单时发送交易
 
-Now that we have the building blocks for the instruction data, we can create and send the transaction when a user submits the form. Open `Form.tsx` and locate the `handleTransactionSubmit` function. This gets called by `handleSubmit` each time a user submits the Movie Review form.
+现在我们已经有了指令数据的构建块，当用户提交表单时，我们可以创建并发送交易。打开`Form.tsx`并找到`handleTransactionSubmit`函数。每次用户提交电影评论表单时，都会调用`handleSubmit`。
 
-Inside this function, we’ll be creating and sending the transaction that contains the data submitted through the form.
+在这个函数内部，我们将创建并发送包含通过表单提交的数据的交易。
 
-Start by importing `@solana/web3.js` and importing `useConnection` and `useWallet` from `@solana/wallet-adapter-react`.
+首先导入`@solana/web3.js`并从`@solana/wallet-adapter-react`导入`useConnection和useWallet`。
 
 ```tsx
 import { FC } from 'react'
@@ -269,7 +268,7 @@ import * as web3 from '@solana/web3.js'
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 ```
 
-Next, before the `handleSubmit` function, call `useConnection()` to get a `connection` object and call `useWallet()` to get `publicKey` and `sendTransaction`.
+接下来，在`handleSubmit`函数之前，调用`useConnection()`来获取一个`connection`对象，并调用`useWallet()`来获取`publicKey`和`sendTransaction`。
 
 ```tsx
 import { FC } from 'react'
@@ -299,17 +298,17 @@ export const Form: FC = () => {
 }
 ```
 
-Before we implement `handleTransactionSubmit`, let’s talk about what needs to be done. We need to:
+在我们实现`handleTransactionSubmit`之前，让我们讨论一下需要做什么。我们需要：
 
-1. Check that `publicKey` exists to ensure that the user has connected their wallet.
-2. Call `serialize()` on `movie` to get a buffer representing the instruction data.
-3. Create a new `Transaction` object.
-4. Get all of the accounts that the transaction will read or write.
-5. Create a new `Instruction` object that includes all of these accounts in the `keys` argument, includes the buffer in the `data` argument, and includes the program’s public key in the `programId` argument.
-6. Add the instruction from the last step to the transaction.
-7. Call `sendTransaction`, passing in the assembled transaction.
+1. 检查`publicKey`是否存在，以确保用户已经连接了他们的钱包。
+2. 对`movie`调用`serialize()`来获取代表指令数据的缓冲区。
+3. 创建一个新的`Transaction`对象。
+4. 获取事务将读取或写入的所有账户。
+5. 创建一个新的`Instruction`对象，该对象在`keys`参数中包含所有这些账户，在`data`参数中包含缓冲区，在`programId`参数中包含程序的公钥。
+6. 将上一步中的指令添加到交易中。
+7. 调用`sendTransaction`，传入组装好的交易。
 
-That’s quite a lot to process! But don’t worry, it gets easier the more you do it. Let’s start with the first 3 steps from above:
+这确实是很多步骤！但不用担心，做得越多就会越容易。让我们从上述的前3个步骤开始：
 
 ```tsx
 const handleTransactionSubmit = async (movie: Movie) => {
@@ -323,7 +322,7 @@ const handleTransactionSubmit = async (movie: Movie) => {
 }
 ```
 
-The next step is to get all of the accounts that the transaction will read or write. In past lessons, the account where data will be stored has been given to you. This time, the account’s address is more dynamic, so it needs to be computed. We’ll cover this in depth in the next lesson, but for now you can use the following, where `pda` is the address to the account where data will be stored:
+下一步是获取交易将读取或写入的所有账户。在之前的课程中，将要存储数据的账户已经给出。这一次，账户的地址更加动态，因此需要计算。我们将在下一课中深入讨论这个问题，但现在你可以使用以下内容，其中`pda`是将要存储数据的账户的地址：
 
 ```tsx
 const [pda] = await web3.PublicKey.findProgramAddress(
@@ -332,9 +331,9 @@ const [pda] = await web3.PublicKey.findProgramAddress(
 )
 ```
 
-In addition to this account, the program will also need to read from `SystemProgram`, so our array needs to include `web3.SystemProgram.programId` as well.
+除了这个账户之外，程序还需要从`SystemProgram`读取，因此我们的数组还需要包括`web3.SystemProgram.programId`。
 
-With that, we can finish the remaining steps:
+有了这些，我们可以完成剩下的步骤：
 
 ```tsx
 const handleTransactionSubmit = async (movie: Movie) => {
@@ -384,30 +383,30 @@ const handleTransactionSubmit = async (movie: Movie) => {
 }
 ```
 
-And that’s it! You should now be able to use the form on the site to submit a movie review. While you won’t see the UI update to reflect the new review, you can look at the transaction’s program logs on Solana Explorer to see that it was successful.
+就是这样！现在你应该能够使用网站上的表单提交电影评论了。虽然你不会看到用户界面更新以反映新的评论，但你可以在Solana Explorer上查看交易的程序日志，以确认它已成功。
 
-If you need a bit more time with this project to feel comfortable, have a look at the complete [solution code](https://github.com/Unboxed-Software/solana-movie-frontend/tree/solution-serialize-instruction-data).
+如果你需要更多时间来熟悉这个项目，请查看完整的内容。 [解法代码](https://github.com/Unboxed-Software/solana-movie-frontend/tree/solution-serialize-instruction-data).
 
-# Challenge
+# 挑战
 
-Now it’s your turn to build something independently. Create an application that lets students of this course introduce themselves! The Solana program that supports this is at `HdE95RSVsdb315jfJtaykXhXY478h53X6okDupVfY9yf`.
+现在轮到你独立构建一些东西了。创建一个应用程序，让这门课程的学生们介绍自己！支持此功能的Solana程序位于
+`HdE95RSVsdb315jfJtaykXhXY478h53X6okDupVfY9yf`.
 
-![Screenshot of Student Intros frontend](../assets/student-intros-frontend.png)
+![学生介绍前端的截图](../../assets/student-intros-frontend.png)
 
-1. You can build this from scratch or you can [download the starter code](https://github.com/Unboxed-Software/solana-student-intros-frontend/tree/starter).
-2. Create the instruction buffer layout in `StudentIntro.ts`. The program expects instruction data to contain:
-   1. `variant` as an unsigned, 8-bit integer representing the instruction to run (should be 0).
-   2. `name` as a string representing the student's name.
-   3. `message` as a string representing the message the student is sharing about their Solana journey.
-3. Create a method in `StudentIntro.ts` that will use the buffer layout to serialize a `StudentIntro` object.
-4. In the `Form` component, implement the `handleTransactionSubmit` function so that it serializes a `StudentIntro`, builds the appropriate transaction and transaction instructions, and submits the transaction to the user's wallet.
-5. You should now be able to submit introductions and have the information stored on chain! Be sure to log the transaction ID and look at it in Solana Explorer to verify that it worked.
+1. 你可以从头开始构建，或者你可以[下载起始代码](https://github.com/Unboxed-Software/solana-student-intros-frontend/tree/starter)。
+2. 在`StudentIntro.ts`中创建指令缓冲区布局。程序期望指令数据包含：
+  1. 作为无符号8位整数的variant，代表要运行的指令（应为0）。
+  2. 作为字符串的name，代表学生的名字。
+  3. 作为字符串的message，代表学生分享关于他们的Solana之旅的信息。
+3. 在`StudentIntro.ts`中创建一个方法，使用缓冲区布局序列化一个`StudentIntro`对象。
+4. 在`Form`组件中，实现`handleTransactionSubmit`函数，以便它序列化一个`StudentIntro`，构建适当的交易和交易指令，并将交易提交到用户的钱包。
+5. 现在你应该能够提交介绍，并且有信息存储在链上！确保记录交易ID，并在`Solana Explorer`中查看它以验证它是否工作。
 
-If you get really stumped, you can [check out the solution code](https://github.com/Unboxed-Software/solana-student-intros-frontend/tree/solution-serialize-instruction-data).
+如果你真的感到非常困惑，你可以[查看解决方案代码](https://github.com/Unboxed-Software/solana-student-intros-frontend/tree/solution-serialize-instruction-data)。
 
-Feel free to get creative with these challenges and take them even further. The instructions aren't here to hold you back!
+随意发挥这些挑战的创造性，并将它们推进得更远。这些指令不是为了限制你！
 
+## 实验完成了吗?
 
-## Completed the lab?
-
-Push your code to GitHub and [tell us what you thought of this lesson](https://form.typeform.com/to/IPH0UGz7#answers-lesson=6cb40094-3def-4b66-8a72-dd5f00298f61)!
+将你的代码推送到GitHub并[告诉我们你对这节课的看法](https://form.typeform.com/to/IPH0UGz7#answers-lesson=6cb40094-3def-4b66-8a72-dd5f00298f61)!
